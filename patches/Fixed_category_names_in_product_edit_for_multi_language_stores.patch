@@ -1,0 +1,33 @@
+Index: app/code/Magento/Catalog/Ui/DataProvider/Product/Form/Modifier/Categories.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/code/Magento/Catalog/Ui/DataProvider/Product/Form/Modifier/Categories.php	(revision 3a4ba669c7a834007d15c4005e716da2ca72fdbb)
++++ app/code/Magento/Catalog/Ui/DataProvider/Product/Form/Modifier/Categories.php	(revision 2778acb2f2086d6cfe8484156c858dc7f4f94826)
+@@ -310,12 +310,14 @@
+      */
+     protected function getCategoriesTree($filter = null)
+     {
+-        $categoryTree = $this->getCacheManager()->load(self::CATEGORY_TREE_ID . '_' . $filter);
++        $storeId = $this->locator->getStore()->getId();
++        $cacheKey = self::CATEGORY_TREE_ID . '_' . $storeId . '_' . $filter;
++
++        $categoryTree = $this->getCacheManager()->load($cacheKey);
+         if ($categoryTree) {
+             return $this->serializer->unserialize($categoryTree);
+         }
+ 
+-        $storeId = $this->locator->getStore()->getId();
+         /* @var $matchingNamesCollection \Magento\Catalog\Model\ResourceModel\Category\Collection */
+         $matchingNamesCollection = $this->categoryCollectionFactory->create();
+ 
+@@ -367,7 +369,7 @@
+ 
+         $this->getCacheManager()->save(
+             $this->serializer->serialize($categoryById[CategoryModel::TREE_ROOT_ID]['optgroup']),
+-            self::CATEGORY_TREE_ID . '_' . $filter,
++            $cacheKey,
+             [
+                 \Magento\Catalog\Model\Category::CACHE_TAG,
+                 \Magento\Framework\App\Cache\Type\Block::CACHE_TAG
